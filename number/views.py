@@ -20,5 +20,36 @@ class NumberListCreateAPIView(generics.ListCreateAPIView):
 
         return Response("Bro", status=status.HTTP_400_BAD_REQUEST)
 
+# Update your views here
 
 
+class NumberUpdateAPIView(generics.RetrieveUpdateAPIView):
+    queryset = Number.objects.all()
+    serializer_class = NumberSerializers
+    lookup_field = 'pk'
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()  # Fetch the object
+        data = request.data  # Get incoming data
+
+        # Update only the provided fields
+        if 'entry' in data:
+            instance.entry = data['entry']
+        if 'price' in data:
+            instance.price = data['price']
+        if 'discount' in data:
+            instance.discount = data['discount']
+
+        instance.save()  # Save updated fields
+        serializer = NumberSerializers(instance)  # Serialize updated object
+        return Response({"message": "Updated Successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+# Delete your views    
+class NumberDeleteAPIView(generics.DestroyAPIView):
+    queryset = Number.objects.all()
+    serializer_class = NumberSerializers
+    lookup_field = 'pk'
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()  # Fetch the object
+        instance.delete()
+        return Response({"message": "Deleted Successfully"}, status=status.HTTP_204_NO_CONTENT)
